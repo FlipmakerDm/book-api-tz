@@ -4,10 +4,10 @@ import styles from './Card.module.css';
 import propTypes from 'prop-types';
 
 const Card = ({ book, openBook }) => {
-  let cover = book?.volumeInfo?.imageLinks?.smallThumbnail || defaultBook;
-  let categories = book?.volumeInfo?.categories;
-  let title = book?.volumeInfo?.title;
-  let authors = book?.volumeInfo?.authors;
+  const cover = book?.volumeInfo?.imageLinks?.smallThumbnail || defaultBook;
+  const categories = book?.volumeInfo?.categories;
+  const title = book?.volumeInfo?.title;
+  const authors = book?.volumeInfo?.authors;
 
   const getCategory = () => {
     return categories && categories.join('\n');
@@ -18,7 +18,7 @@ const Card = ({ book, openBook }) => {
   };
 
   return (
-    <div className={styles.cardBook} onClick={() => openBook(book.id)}>
+    <div className={styles.cardBook} onClick={() => openBook(book)}>
       <div className={styles.cover}>
         <img src={cover} alt="img" />
       </div>

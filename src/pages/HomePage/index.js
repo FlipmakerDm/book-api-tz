@@ -2,9 +2,8 @@ import React from 'react';
 import Loader from '../../components/Loader';
 import styles from './HomePage.module.css';
 import Card from '../../components/CardItem';
-import CounterBooks from '../../components/CounterBooks';
 import { useSelector, useDispatch } from 'react-redux';
-import { setPage } from '../../components/Search/searchSlice';
+import { setPage, setBookItem } from '../../components/Search/searchSlice';
 import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
@@ -19,8 +18,9 @@ const HomePage = () => {
     dispatch(setPage(page + 1));
   };
 
-  const openBook = (id) => {
-    navigate(`/book/${id}`);
+  const openBook = (book) => {
+    dispatch(setBookItem(book));
+    navigate(`/book/${book.id}`);
   };
 
   const getFiltredBooks = () => {
@@ -37,11 +37,6 @@ const HomePage = () => {
       return false;
     });
   };
-
-  // const counter = () => {
-  //   counterBooks = totalItems;
-  //   return counterBooks;
-  // };
 
   return (
     <div className={styles.wrapper}>

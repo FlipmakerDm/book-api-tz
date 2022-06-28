@@ -17,9 +17,6 @@ export const fetchBooks = createAsyncThunk(
     const response = await fetch(url);
     const res = await response.json();
 
-    const totalItems = res.totalItems;
-    console.log(totalItems);
-
     if (res?.items?.length) {
       const uniqItems = res.items.filter((item, itemIdx) => {
         if (!search.bookItems.length) {
@@ -27,7 +24,25 @@ export const fetchBooks = createAsyncThunk(
         }
         return !search.bookItems.find((bookItem) => bookItem.id === item.id);
       });
-      return uniqItems;
+      return { totalItems: res.totalItems, bookItems: uniqItems };
+    }
+
+    throw new Error('No result');
+  },
+);
+
+export const fetchBookById = createAsyncThunk(
+  'search/fetchBookById',
+  async (id) => {
+    const queries = `?key=${apiKey}`;
+
+    const url = `https://www.googleapis.com/books/v1/volumes/${id}${queries}`;
+
+    const response = await fetch(url);
+    const res = await response.json();
+
+    if (res) {
+      return res;
     }
 
     throw new Error('No result');
@@ -41,7 +56,8 @@ const initialState = {
   loading: false,
   page: 0,
   bookItems: [],
-  counterBooks: 0,
+  totalItems: 0,
+  bookItem: null,
 };
 
 export const searchSlice = createSlice({
@@ -63,8 +79,8 @@ export const searchSlice = createSlice({
     setBookItems: (state, action) => {
       state.bookItems = action.payload;
     },
-    setCounterBooks: (state, action) => {
-      state.counterBooks = action.payload;
+    setBookItem: (state, action) => {
+      state.bookItem = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -73,9 +89,21 @@ export const searchSlice = createSlice({
     });
     builder.addCase(fetchBooks.fulfilled, (state, action) => {
       state.loading = false;
-      state.bookItems.push(...action.payload);
+      state.bookItems.push(...action.payload.bookItems);
+      state.totalItems = action.payload.totalItems;
     });
     builder.addCase(fetchBooks.rejected, (state, action) => {
+      state.loading = false;
+    });
+
+    builder.addCase(fetchBookById.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchBookById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.bookItem = action.payload;
+    });
+    builder.addCase(fetchBookById.rejected, (state, action) => {
       state.loading = false;
     });
   },
@@ -87,8 +115,7 @@ export const {
   setSort,
   setPage,
   setBookItems,
-  setCounterBooks,
-  totalItems,
+  setBookItem,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;

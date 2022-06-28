@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import defaultBook from '../../img/defaultBook.jpg';
-import { useParams, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchBookById } from '../../components/Search/searchSlice';
+import Loader from '../../components/Loader';
 import styles from './aboutPage.module.css';
 
 const AboutPage = () => {
-  const { bookItems } = useSelector((state) => state.search);
+  const { id } = useParams();
+  const { bookItem, loading } = useSelector((state) => state.search);
+  const dispatch = useDispatch();
 
-  let { id } = useParams();
+  useEffect(() => {
+    if (!bookItem) {
+      dispatch(fetchBookById(id));
+    }
+  }, []);
 
-  const book = bookItems.find((item) => item.id === id) || {};
-
-  let cover = book?.volumeInfo?.imageLinks?.thumbnail || defaultBook;
-  let categories = book?.volumeInfo?.categories;
-  let title = book?.volumeInfo?.title;
-  let authors = book?.volumeInfo?.authors;
-  let description = book?.volumeInfo?.description;
+  const cover = bookItem?.volumeInfo?.imageLinks?.thumbnail || defaultBook;
+  const categories = bookItem?.volumeInfo?.categories;
+  const title = bookItem?.volumeInfo?.title;
+  const authors = bookItem?.volumeInfo?.authors;
+  const description = bookItem?.volumeInfo?.description;
 
   const getCategory = () => {
     return categories && categories.join('\n');
@@ -27,6 +33,7 @@ const AboutPage = () => {
 
   return (
     <div className={styles.pageContainer}>
+      {loading && <Loader />}
       <div className={styles.coverContainer}>
         <div className={styles.imgBox}>
           <img src={cover} alt="img" />
