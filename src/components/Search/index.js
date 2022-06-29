@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import iconSearch from '../../img/icons/iconSearch.svg';
 import styles from './search.module.css';
 import Select from 'react-select';
@@ -9,6 +9,7 @@ import {
   setSort,
   fetchBooks,
   setBookItems,
+  setLoading,
 } from './searchSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,9 +17,7 @@ const Search = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { value, category, sort, page, bookItems } = useSelector(
-    (state) => state.search,
-  );
+  const { value, category, sort, page } = useSelector((state) => state.search);
 
   const categoriesOptions = [
     { value: 'all', label: 'all' },
@@ -29,18 +28,19 @@ const Search = () => {
     { value: 'medical', label: 'medical' },
     { value: 'poetry', label: 'poetry' },
   ];
+
   const sortOptions = [
     { value: 'relevance', label: 'relevance' },
     { value: 'newest', label: 'newest' },
   ];
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-
-    dispatch(setBookItems([]));
-    dispatch(fetchBooks());
-
-    navigate(`/`);
+    if (e.target[0].value.trim() !== '') {
+      e.preventDefault();
+      dispatch(setBookItems([]));
+      dispatch(fetchBooks());
+      navigate(`/`);
+    }
   };
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const Search = () => {
       </form>
       <div className={styles.selectsContainer}>
         <div className={styles.selectBox}>
-          <p style={{ margin: 0 }}>Catigories</p>
+          <p>Catigories</p>
           <Select
             className={styles.select}
             value={category}
@@ -75,7 +75,7 @@ const Search = () => {
           />
         </div>
         <div className={styles.selectBox}>
-          <p style={{ margin: 0 }}>Sorting by</p>
+          <p>Sorting by</p>
           <Select
             className={styles.select}
             options={sortOptions}

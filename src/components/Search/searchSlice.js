@@ -15,6 +15,7 @@ export const fetchBooks = createAsyncThunk(
     const url = `https://www.googleapis.com/books/v1/volumes${queries}`;
 
     const response = await fetch(url);
+
     const res = await response.json();
 
     if (res?.items?.length) {
@@ -27,7 +28,7 @@ export const fetchBooks = createAsyncThunk(
       return { totalItems: res.totalItems, bookItems: uniqItems };
     }
 
-    throw new Error('No result');
+    throw new Error('Books not found');
   },
 );
 
@@ -37,15 +38,12 @@ export const fetchBookById = createAsyncThunk(
     const queries = `?key=${apiKey}`;
 
     const url = `https://www.googleapis.com/books/v1/volumes/${id}${queries}`;
-
     const response = await fetch(url);
     const res = await response.json();
-
     if (res) {
       return res;
     }
-
-    throw new Error('No result');
+    throw new Error('Book not found');
   },
 );
 
@@ -55,9 +53,10 @@ const initialState = {
   sort: { value: 'relevance', label: 'relevance' },
   loading: false,
   page: 0,
-  bookItems: [],
   totalItems: 0,
+  bookItems: [],
   bookItem: null,
+  error: '',
 };
 
 export const searchSlice = createSlice({
@@ -66,6 +65,9 @@ export const searchSlice = createSlice({
   reducers: {
     setValue: (state, action) => {
       state.value = action.payload;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
     setCategory: (state, action) => {
       state.category = action.payload;
@@ -84,7 +86,10 @@ export const searchSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchBooks.pending, (state) => {
+    builder.addCase(fetchBooks.pending, (state, action) => {
+      if (state.error) {
+        state.error = '';
+      }
       state.loading = true;
     });
     builder.addCase(fetchBooks.fulfilled, (state, action) => {
@@ -94,9 +99,13 @@ export const searchSlice = createSlice({
     });
     builder.addCase(fetchBooks.rejected, (state, action) => {
       state.loading = false;
+      state.error = action.error.message;
     });
 
     builder.addCase(fetchBookById.pending, (state) => {
+      if (state.error) {
+        state.error = '';
+      }
       state.loading = true;
     });
     builder.addCase(fetchBookById.fulfilled, (state, action) => {
@@ -105,12 +114,14 @@ export const searchSlice = createSlice({
     });
     builder.addCase(fetchBookById.rejected, (state, action) => {
       state.loading = false;
+      state.error = action.error.message;
     });
   },
 });
 
 export const {
   setValue,
+  setLoading,
   setCategory,
   setSort,
   setPage,

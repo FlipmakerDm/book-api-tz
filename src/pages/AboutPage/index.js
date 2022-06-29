@@ -18,35 +18,38 @@ const AboutPage = () => {
   }, []);
 
   const cover = bookItem?.volumeInfo?.imageLinks?.thumbnail || defaultBook;
-  const categories = bookItem?.volumeInfo?.categories;
+  const categories = bookItem?.volumeInfo?.categories?.join('\n');
   const title = bookItem?.volumeInfo?.title;
-  const authors = bookItem?.volumeInfo?.authors;
+  const authors = bookItem?.volumeInfo?.authors?.join('\n');
   const description = bookItem?.volumeInfo?.description;
 
-  const getCategory = () => {
-    return categories && categories.join('\n');
-  };
-
-  const getAuthor = () => {
-    return authors && authors.join(',\n');
-  };
-
+  if (!bookItem) {
+    return (
+      <div className={styles.errorContainer}>
+        <h2>BOOK NOT FOUND.</h2>
+      </div>
+    );
+  }
   return (
     <div className={styles.pageContainer}>
       {loading && <Loader />}
-      <div className={styles.coverContainer}>
-        <div className={styles.imgBox}>
-          <img src={cover} alt="img" />
+      <div className={styles.aboutBookContainer}>
+        <div className={styles.coverContainer}>
+          <div className={styles.imgBox}>
+            <img src={cover} alt="img" />
+          </div>
         </div>
-      </div>
-      <div className={styles.infoContainer}>
-        <div className={styles.categories}>
-          <p>{getCategory()}</p>
+        <div className={styles.infoContainer}>
+          <div className={styles.categories}>
+            <p>{categories}</p>
+          </div>
+          <div className={styles.title}></div>
+          <h3>{title}</h3>
+          <p>{authors}</p>
+          {description && (
+            <div className={styles.description}>{description}</div>
+          )}
         </div>
-        <div className={styles.title}></div>
-        <h3>{title}</h3>
-        <p>{getAuthor()}</p>
-        <div className={styles.description}>{description}</div>
       </div>
     </div>
   );

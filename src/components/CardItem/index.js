@@ -1,21 +1,13 @@
 import React from 'react';
-import defaultBook from '../../img/booksHeader.jpg';
+import defaultBook from '../../img/defaultBook.jpg';
 import styles from './Card.module.css';
 import propTypes from 'prop-types';
 
 const Card = ({ book, openBook }) => {
   const cover = book?.volumeInfo?.imageLinks?.smallThumbnail || defaultBook;
-  const categories = book?.volumeInfo?.categories;
+  const categories = book?.volumeInfo?.categories?.join('\n');
   const title = book?.volumeInfo?.title;
-  const authors = book?.volumeInfo?.authors;
-
-  const getCategory = () => {
-    return categories && categories.join('\n');
-  };
-
-  const getAuthor = () => {
-    return authors && authors.join(',\n');
-  };
+  const authors = book?.volumeInfo?.authors?.join(',\n');
 
   return (
     <div className={styles.cardBook} onClick={() => openBook(book)}>
@@ -23,9 +15,9 @@ const Card = ({ book, openBook }) => {
         <img src={cover} alt="img" />
       </div>
       <div className={styles.volume}>
-        <p className={styles.category}>{getCategory()}</p>
+        <p className={styles.category}>{categories}</p>
         <h3 className={styles.title}>{title}</h3>
-        <p className={styles.author}>{getAuthor()}</p>
+        <p className={styles.author}>{authors}</p>
       </div>
     </div>
   );
@@ -33,6 +25,7 @@ const Card = ({ book, openBook }) => {
 
 Card.propTypes = {
   book: propTypes.object.isRequired,
+  openBook: propTypes.isRequired,
 };
 
 export default Card;

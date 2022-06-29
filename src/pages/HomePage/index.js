@@ -1,20 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Loader from '../../components/Loader';
-import styles from './HomePage.module.css';
+import styles from './homePage.module.css';
 import Card from '../../components/CardItem';
 import { useSelector, useDispatch } from 'react-redux';
-import { setPage, setBookItem } from '../../components/Search/searchSlice';
+import {
+  setPage,
+  setBookItem,
+  setLoading,
+} from '../../components/Search/searchSlice';
 import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
-  let navigate = useNavigate();
-
-  const { page, loading, bookItems, category, totalItems } = useSelector(
-    (state) => state.search,
-  );
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { page, loading, bookItems, category, totalItems, error } = useSelector(
+    (state) => state.search,
+  );
+
+  const [filteredBookItems, setFilteredBookItems] = useState([]);
+
+  useEffect(() => {
+    if (category.value === 'all') {
+      setFilteredBookItems(bookItems);
+      return;
+    }
+
+    const filteredBookArr = bookItems.filter((bookItem) => {
+      if (bookItem?.volumeInfo?.categories?.length) {
+        return bookItem.volumeInfo.categories.some(
+          (item) => item.toLowerCase() === category.value,
+        );
+      }
+      return false;
+    });
+    setFilteredBookItems(filteredBookArr);
+  }, [category, bookItems]);
+
   const loadMore = () => {
+    dispatch(setLoading(false));
     dispatch(setPage(page + 1));
   };
 
@@ -23,34 +47,32 @@ const HomePage = () => {
     navigate(`/book/${book.id}`);
   };
 
-  const getFiltredBooks = () => {
-    if (category.value === 'all') {
-      return bookItems;
-    }
-
-    return bookItems.filter((bookItem) => {
-      if (bookItem?.volumeInfo?.categories?.length) {
-        return bookItem.volumeInfo.categories.some(
-          (item) => item.toLowerCase() === category.value,
-        );
-      }
-      return false;
-    });
-  };
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <h2>{error}</h2>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
+      {totalItems !== 0 && (
+        <div className={styles.count}>
+          <p>
+            Results: {filteredBookItems.length} / {totalItems} books
+          </p>
+        </div>
+      )}
+
       <div className={styles.cardContainer}>
         {loading && <Loader />}
-        <div className="count">
-          <p>{totalItems}</p>
-        </div>
-        {/* <CounterBooks counterBooks={totalItems} /> */}
-        {getFiltredBooks().map((book) => (
+        {filteredBookItems.map((book) => (
           <Card book={book} key={book.id} openBook={openBook} />
         ))}
       </div>
-      {bookItems.length !== 0 && (
+
+      {filteredBookItems.length !== 0 && (
         <button className={styles.load_btn} onClick={loadMore}>
           Load more
         </button>

@@ -1,16 +1,20 @@
 .loader {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   transform: translateZ(1px);
 }
+
 .loader > div {
   display: inline-block;
   width: 64px;
   height: 64px;
   margin: 100px;
   border-radius: 50%;
-  background: rgb(172, 58, 58);
+  background: rgb(153, 203, 254);
   animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
+
 @keyframes lds-circle {
   0%,
   100% {

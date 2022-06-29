@@ -3,7 +3,8 @@
 }
 
 body {
-  font-size: 100%;
+  position: relative;
+  width: 100%;
   line-height: 1;
   font-size: 14px;
   font-family: 'Fira Sans', sans-serif;
@@ -11,8 +12,24 @@ body {
   text-decoration: none;
   overflow: auto;
 }
-
+body::-webkit-scrollbar {
+  display: none;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+p {
+  margin: 0;
+}
+
+.description::-webkit-scrollbar {
+  background-color: transparent;
+  width: 1px;
+}
+
+.description::-webkit-scrollbar-thumb {
+  background-color: #797678;
+  border-radius: 5px;
 }

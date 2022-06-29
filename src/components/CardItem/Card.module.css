@@ -13,9 +13,11 @@
 .cardBook:hover {
   transform: scale(1.05);
 }
+
 .cover {
   align-self: center;
 }
+
 .cover img {
   max-width: 150px;
   height: 200px;
@@ -23,6 +25,7 @@
   justify-content: center;
   box-shadow: #00000073 6px 6px 13px 2px;
 }
+
 .volume {
   max-width: 230px;
   margin-top: 15px;
@@ -32,9 +35,11 @@
   font-size: 16px;
   font-weight: bold;
 }
+
 .category {
   color: #0000005a;
 }
+
 .author {
   color: #0000008d;
   white-space: pre-wrap;
