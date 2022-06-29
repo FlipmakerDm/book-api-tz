@@ -25,7 +25,7 @@ const Card = ({ book, openBook }) => {
 
 Card.propTypes = {
   book: propTypes.object.isRequired,
-  openBook: propTypes.isRequired,
+  openBook: propTypes.func.isRequired,
 };
 
 export default Card;
