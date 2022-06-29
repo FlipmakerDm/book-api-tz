@@ -1,6 +1,6 @@
 import React from 'react';
 import defaultBook from '../../img/defaultBook.jpg';
-import styles from './Card.module.css';
+import styles from './card.module.css';
 import propTypes from 'prop-types';
 
 const Card = ({ book, openBook }) => {
